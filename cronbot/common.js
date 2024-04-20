@@ -17,5 +17,21 @@ module.exports = {
         });
 
         return tokens;
+    },
+    formatPrices: (dayDatas) => {
+        const prices = [];
+        dayDatas.map((dayData)=> {
+            prices.push({
+                "priceUSD": dayData['priceUSD'],
+                "date": dayData['date'],
+                "token_id": dayData['token']['id'],
+                "high": dayData['high'],
+                "id": dayData["id"],
+                "low": dayData["low"],
+                "open": dayData["open"]
+            })
+        });
+
+        return prices;
     }
 }
