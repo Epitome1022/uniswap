@@ -1,6 +1,6 @@
 const axios = require('axios');
 const UNISWAP_V3_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
-
+const BITQUERY_V2_URL = 'https://streaming.bitquery.io/graphql';
 const fetchPools = async (page, lastTimestamp) => {
     const query = `
         {
@@ -41,7 +41,7 @@ const fetchPools = async (page, lastTimestamp) => {
 }
 
 const fetchTokenDayDatas = async (token_address, page, lastTimestamp) => {
-    const query =`
+    const query = `
         {
             tokenDayDatas(
                 first: 1000
@@ -80,67 +80,58 @@ const fetchTokenDayDatas = async (token_address, page, lastTimestamp) => {
     }
 }
 
-const fetchHolders = async (token_address, page, lastTimestamp) => {
-    // const endpoint = `https://api.etherscan.io/api
-    //     ?module=token
-    //     &action=tokenholderlist
-    //     &contractaddress=${token_address}
-    //     &page=${page}
-    //     &offset=10
-    //     &apikey=YourApiKeyToken`;
-    const query = `query {
-        EVM(dataset: archive, network: eth) {
+const fetchHolders = async (formattedDate, token_address) => {
+
+    try {
+        const query = `query {
+          EVM(dataset: archive, network: eth) {
             TokenHolders(
-              date: "2024-03-21"
-              tokenSmartContract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+              date: "${formattedDate}"
+              tokenSmartContract: "${token_address}"
               where: {Balance: {Amount: {gt: "0"}}}
             ) {
               uniq(of: Holder_Address)
             }
-        }
+          }
+        }`;
 
-    }`;
-    
-    // const config = {
-    //     method: "post",
-
-    //     url: "https://streaming.bitquery.io/graphql",
-
-    //     headers: {
-    //         "Content-Type": "application/json",
-
-    //         "X-API-KEY": "BQYPNAQgoBHCbp1FGfw8GdZJVYlJjwKN",
-    //     },
-
-    //     data: query,
-    // };
-
-    try {
-        fetch("https://streaming.bitquery.io/graphql", {
-            method: 'POST',
+        // let config = {
+        //     method: 'post',
+        //     maxBodyLength: Infinity,
+        //     url: 'https://streaming.bitquery.io/graphql',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Bearer ory_at_CdK1JWkSFwL_85tnE44D0Imj5BISGrpscE1NRd7wPlM.8IzR-8zHLs_nu4S20wfkPoFnL_ZYPCbzaZxnMHSHLnk'
+        //     },
+        //     data: data
+        // };
+        const response = await axios.request({
             headers: {
                 'Content-Type': 'application/json',
-                // 'X-API-KEY': "BQYPNAQgoBHCbp1FGfw8GdZJVYlJjwKN",
-                'Authorization': 'Bearer ory_at_gg4YlNYMp0uoSqUnD_rM8CAxlRn-SagTf-DKYtE2DVI.rckolzEb2GLix4czM1OUlvKCR7rsYVMM7SgJqI4j1Ao'
+                'Authorization': 'Bearer ory_at_CdK1JWkSFwL_85tnE44D0Imj5BISGrpscE1NRd7wPlM.8IzR-8zHLs_nu4S20wfkPoFnL_ZYPCbzaZxnMHSHLnk'
             },
-            body: JSON.stringify({query})
-        })
-        .then(response => {
-            console.log(response);
-            return response
-        })
-        .then(data => {console.log(data); return data;})
-        .catch(e => console.log('error:   ' + e));
-        // if (response && response.data && response.data.data && response.data.data.pools) {
-        //     if (response.data.data.pools.length > 0) {
-        //         return response.data.data.pools;
-        //     }
-        // }
+            url: BITQUERY_V2_URL,
+            data: JSON.stringify({ query }),
+            method: 'post',
+            maxBodyLength: Infinity,
+        });
+        if (response) {
+            return response.data.data['EVM']['TokenHolders'][0]['uniq'];
+
+        } else {
+            return 0;
+        }
 
     } catch (error) {
-        console.error("Error fetching tokens from Uniswap:", error);
-        return [];
+        console.error("Error fetching tokens from Bitquery:", error);
+        return 0;
     }
+    // if (response) {
+    //     return response.count;
+    // }
+    // return 0;
 }
+
+fetchHolders('2024-04-20', '0xdAC17F958D2ee523a2206206994597C13D831ec7');
 
 module.exports = { fetchPools, fetchTokenDayDatas, fetchHolders }
