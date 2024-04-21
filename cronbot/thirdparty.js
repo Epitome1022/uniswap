@@ -95,20 +95,10 @@ const fetchHolders = async (formattedDate, token_address) => {
           }
         }`;
 
-        // let config = {
-        //     method: 'post',
-        //     maxBodyLength: Infinity,
-        //     url: 'https://streaming.bitquery.io/graphql',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ory_at_CdK1JWkSFwL_85tnE44D0Imj5BISGrpscE1NRd7wPlM.8IzR-8zHLs_nu4S20wfkPoFnL_ZYPCbzaZxnMHSHLnk'
-        //     },
-        //     data: data
-        // };
         const response = await axios.request({
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ory_at_CdK1JWkSFwL_85tnE44D0Imj5BISGrpscE1NRd7wPlM.8IzR-8zHLs_nu4S20wfkPoFnL_ZYPCbzaZxnMHSHLnk'
+                'Authorization': 'Bearer ory_at_Y1rS3T2Pr1ndUU81OwHsECxu-tSTmK3ZusCVjmaePqg.LL6Hoa2W4FJXbCgSkgKTWdzp8XYpwUUgks0l_7lYk0Q'
             },
             url: BITQUERY_V2_URL,
             data: JSON.stringify({ query }),
@@ -126,12 +116,7 @@ const fetchHolders = async (formattedDate, token_address) => {
         console.error("Error fetching tokens from Bitquery:", error);
         return 0;
     }
-    // if (response) {
-    //     return response.count;
-    // }
-    // return 0;
 }
 
-// fetchHolders('2024-04-20', '0xdAC17F958D2ee523a2206206994597C13D831ec7');
 
 module.exports = { fetchPools, fetchTokenDayDatas, fetchHolders }

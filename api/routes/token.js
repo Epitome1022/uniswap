@@ -39,18 +39,18 @@ token.get('/info', async (req, res) => {
         if (method == 'month') {
             const moment = require('moment');
             const oneMonthAgo = moment().subtract(1, 'month');
-            const oneMonthAgoFormatted = oneMonthAgo.format('YYYY-MM-DD');
+            // const oneMonthAgoFormatted = oneMonthAgo.format('YYYY-MM-DD');
             prices = await pricesCollection().find({ token_id: `${address}`, date: { $gte: oneMonthAgo.unix() } }).toArray();
-            holders = await holdersCollection().find({ token_id: `${address}`, existingAt: { $gte: `"${oneMonthAgoFormatted}"` } }).sort({ existingAt: -1 }).limit(1).toArray();
+            holders = await holdersCollection().find({ token_id: `${address}`, existingAt: { $gte: oneMonthAgo.unix() } }).sort({ existingAt: -1 }).limit(1).toArray();
         } else {
 
         }
         res.status(200).json({
             success: true,
-            message: 'Tokens',
+            message: 'Success',
             data: {
                 prices,
-                holders
+                holders_count:holders[0]['num_holders']
             }
         });
     } catch (e) {
@@ -58,7 +58,6 @@ token.get('/info', async (req, res) => {
         res.status(200).json({
             success: false,
             message: 'Failed to get token info ',
-            data: []
         });
     }
 });
