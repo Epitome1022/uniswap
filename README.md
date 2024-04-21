@@ -12,6 +12,10 @@ or
 
 npm install
 
+> Run api server
+
+npm run dev
+
 > To get token info for recent 1 month with contract address
 
 
