@@ -1,6 +1,7 @@
 const axios = require('axios');
 const UNISWAP_V3_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
-const BITQUERY_V2_URL = 'https://streaming.bitquery.io/graphql';
+const dotenv = require('dotenv')
+dotenv.config();
 const fetchPools = async (page, lastTimestamp) => {
     const query = `
         {
@@ -80,7 +81,7 @@ const fetchTokenDayDatas = async (token_address, page, lastTimestamp) => {
     }
 }
 
-const fetchHolders = async (formattedDate, token_address) => {
+const fetchHolders = async (formattedDate, token_address, access_token) => {
 
     try {
         const query = `query {
@@ -98,9 +99,9 @@ const fetchHolders = async (formattedDate, token_address) => {
         const response = await axios.request({
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ory_at_Y1rS3T2Pr1ndUU81OwHsECxu-tSTmK3ZusCVjmaePqg.LL6Hoa2W4FJXbCgSkgKTWdzp8XYpwUUgks0l_7lYk0Q'
+                'Authorization': `Bearer ${access_token}`
             },
-            url: BITQUERY_V2_URL,
+            url: process.env.BITQUERY_V2_URL,
             data: JSON.stringify({ query }),
             method: 'post',
             maxBodyLength: Infinity,
@@ -111,7 +112,6 @@ const fetchHolders = async (formattedDate, token_address) => {
         } else {
             return 0;
         }
-
     } catch (error) {
         console.error("Error fetching tokens from Bitquery:", error);
         return 0;

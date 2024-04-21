@@ -1,3 +1,4 @@
+const axios = require('axios');
 const moment = require('moment');
 const dotenv = require('dotenv')
 dotenv.config();
@@ -20,25 +21,41 @@ const save = async (tokens) => {
         
         const now = moment().unix();
         const formattedDate = moment().format('YYYY-MM-DD');
-        while (count > seek) {
-            const token = tokens[seek];
-            const holders = await fetchHolders(formattedDate, token['id']);
-            const holderCount = {
-                token_id: token['id'],
-                existingAt: now,
-                num_holders: holders
-            };
-            const holdersToInsert = [];
-            console.log(holderCount)
-            holdersToInsert.push(holderCount);
-            holdersCollection().insertMany(holdersToInsert).then((result) => {
-            }).catch(e => {
-                console.log(e)
-            });
-            await sleep(10000);
-            seek ++;
+        const oauth_resp = await axios.request({
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            url: process.env.BITQUERY_V2_OAUTH,
+            data: {
+                grant_type: 'client_credentials',
+                client_id: process.env.BIT_APP_ID,
+                client_secret: process.env.BIT_APP_SECRET,
+                scope: 'api'
+            },
+            method: 'post'
+        });
+
+        if (oauth_resp) {
+            // console.log(oauth_resp)
+            while (count > seek) {
+                const token = tokens[seek];
+                const holders = await fetchHolders(formattedDate, token['id'], oauth_resp['data']['access_token']);
+                const holderCount = {
+                    token_id: token['id'],
+                    existingAt: now,
+                    num_holders: holders
+                };
+                const holdersToInsert = [];
+                console.log(holderCount)
+                holdersToInsert.push(holderCount);
+                holdersCollection().insertMany(holdersToInsert).then((result) => {
+                }).catch(e => {
+                    console.log(e)
+                });
+                await sleep(10000);
+                seek ++;
+            }
         }
-        
     } catch (e) {
         console.log(e)
     }

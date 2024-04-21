@@ -23,7 +23,15 @@ http://[host_address]/api/token/info?method=month&address={contract_address}
 
 example:
 
-http://localhost:3000/api/token/info?method=month&address=0x243cacb4d5ff6814ad668c3e225246efa886ad5a
+http://localhost:4000/api/token/info?method=month&address=0x243cacb4d5ff6814ad668c3e225246efa886ad5a
+
+> To get all tokens for recent 1 month
+
+http://[host_address]/api/token/list?method=month
+
+example:
+
+http://localhost:4000/api/token/list?method=month
 
 
 ## BOT

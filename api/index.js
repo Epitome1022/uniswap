@@ -4,7 +4,7 @@ const app = express();
 const routes = require('./routes');
 require('./db/conn');
 app.use(cors());
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 app.get('/', (req, res) => {
 	res.json({ message: 'Hello from Express with CORS enabled!' });
