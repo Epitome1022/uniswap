@@ -50,7 +50,7 @@ token.get('/info', async (req, res) => {
             message: 'Success',
             data: {
                 prices,
-                holders_count:holders[0]['num_holders']
+                holders_count: holders[0]['num_holders']
             }
         });
     } catch (e) {

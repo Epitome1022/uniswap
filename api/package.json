@@ -1,10 +1,9 @@
 {
-  "name": "uniswap",
+  "name": "uniswap-api",
   "version": "0.0.1",
   "description": "uniswap",
   "main": "index.js",
   "scripts": {
-    "cron": "nodemon util/uniswap-cron.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
