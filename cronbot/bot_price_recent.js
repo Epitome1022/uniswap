@@ -4,8 +4,6 @@ const { botPriceRecent } = require('./config.js');
 const { formatPrices, sleep, tokensInDb, pricesCollection } = require('./common.js');
 const { fetchTokenDayDatas } = require('./thirdparty.js');
 
-connectToDatabase();
-
 const lastTimestamp =  process.env.LAST_TIMESTAMP
 
 setTimeout(async () => {

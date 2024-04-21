@@ -1,4 +1,3 @@
-
 const dotenv = require('dotenv')
 dotenv.config();
 const { botPoolRecent } = require('./config.js');
@@ -25,7 +24,7 @@ const save = async () => {
                     tokensToInsert.push(token);
                 }
             }
-            console.log(tokensToInsert.length)
+            console.log(`Page: ${i} Count: ${tokensToInsert.length}`)
             if (tokensToInsert.length > 0) {
                 tokensCollection().insertMany(tokensToInsert).then((result) => {
                 }).catch(e => {

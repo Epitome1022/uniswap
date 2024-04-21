@@ -1,3 +1,4 @@
+const moment = require('moment');
 const dotenv = require('dotenv')
 dotenv.config();
 const { fetchHolders } = require('./thirdparty.js')
@@ -17,19 +18,14 @@ const save = async (tokens) => {
         const count = tokens.length;
         let seek = 0;
         
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-    
-        const formattedDate = `${year}-${month}-${day}`;
-        console.log(holdersCollection)
+        const now = moment().unix();
+        const formattedDate = moment().format('YYYY-MM-DD');
         while (count > seek) {
             const token = tokens[seek];
             const holders = await fetchHolders(formattedDate, token['id']);
             const holderCount = {
                 token_id: token['id'],
-                existingAt: formattedDate,
+                existingAt: now,
                 num_holders: holders
             };
             const holdersToInsert = [];

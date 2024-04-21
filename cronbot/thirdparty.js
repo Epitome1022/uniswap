@@ -44,7 +44,7 @@ const fetchTokenDayDatas = async (token_address, page, lastTimestamp) => {
     const query = `
         {
             tokenDayDatas(
-                first: 1000
+                first: 100
                 skip: ${page * 100}
                 where: { token: "${token_address}", date_gte: ${lastTimestamp} }
                 orderBy: date
@@ -132,6 +132,6 @@ const fetchHolders = async (formattedDate, token_address) => {
     // return 0;
 }
 
-fetchHolders('2024-04-20', '0xdAC17F958D2ee523a2206206994597C13D831ec7');
+// fetchHolders('2024-04-20', '0xdAC17F958D2ee523a2206206994597C13D831ec7');
 
 module.exports = { fetchPools, fetchTokenDayDatas, fetchHolders }
