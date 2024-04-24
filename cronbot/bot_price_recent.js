@@ -44,7 +44,7 @@ const save = async (tokens) => {
                     zeroLengthCount ++;
                 }
 
-                if (zeroLengthCount == 3)
+                if (zeroLengthCount > 1)
                     break;
                 await sleep(2000);
             }

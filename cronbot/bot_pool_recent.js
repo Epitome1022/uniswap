@@ -34,7 +34,7 @@ const save = async () => {
                 zeroLengthCount ++;
             }
 
-            if (zeroLengthCount > 3)
+            if (zeroLengthCount > 1)
                 break;
 
             await sleep(2000);

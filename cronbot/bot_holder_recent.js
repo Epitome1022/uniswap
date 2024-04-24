@@ -5,10 +5,10 @@ dotenv.config();
 const { fetchHolders } = require('./thirdparty.js')
 const { holdersCollection, tokensInDb, sleep } = require('./common.js');
 
-const lastTimestamp =  process.env.LAST_TIMESTAMP
+const lastTimestamp = process.env.LAST_TIMESTAMP
 
 setTimeout(async () => {
-    while(true) {
+    while (true) {
         const tokens = await tokensInDb();
         await save(tokens);
     }
@@ -18,9 +18,9 @@ const save = async (tokens) => {
     try {
         const count = tokens.length;
         let seek = 0;
-        
+
         const now = moment().unix();
-        const formattedDate = moment().format('YYYY-MM-DD');
+
         const oauth_resp = await axios.request({
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -39,21 +39,30 @@ const save = async (tokens) => {
             // console.log(oauth_resp)
             while (count > seek) {
                 const token = tokens[seek];
-                const holders = await fetchHolders(formattedDate, token['id'], oauth_resp['data']['access_token']);
-                const holderCount = {
-                    token_id: token['id'],
-                    existingAt: now,
-                    num_holders: holders
-                };
-                const holdersToInsert = [];
-                console.log(holderCount)
-                holdersToInsert.push(holderCount);
-                holdersCollection().insertMany(holdersToInsert).then((result) => {
-                }).catch(e => {
-                    console.log(e)
-                });
+                for (let i = 0; i < 30; i++) {
+                    const theDay = moment().subtract(i, 'day');
+                    const formattedDate = theDay.format('YYYY-MM-DD');
+                    console.log(formattedDate, token['id'])
+                    const holders = await fetchHolders(formattedDate, token['id'], oauth_resp['data']['access_token']);
+                    const holderCount = {
+                        token_id: token['id'],
+                        existingAt: theDay.unix(),
+                        num_holders: holders
+                    };
+                    const holdersToInsert = [];
+                    console.log(holderCount)
+                    holdersToInsert.push(holderCount);
+                    holdersCollection().insertMany(holdersToInsert).then(async (result) => {
+                        
+                    }).catch(e => {
+                        console.log(e)
+                    });
+
+                    await sleep(10000);
+                }
+
                 await sleep(10000);
-                seek ++;
+                seek++;
             }
         }
     } catch (e) {

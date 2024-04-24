@@ -41,7 +41,7 @@ token.get('/info', async (req, res) => {
             const oneMonthAgo = moment().subtract(1, 'month');
             // const oneMonthAgoFormatted = oneMonthAgo.format('YYYY-MM-DD');
             prices = await pricesCollection().find({ token_id: `${address}`, date: { $gte: oneMonthAgo.unix() } }).toArray();
-            holders = await holdersCollection().find({ token_id: `${address}`, existingAt: { $gte: oneMonthAgo.unix() } }).sort({ existingAt: -1 }).limit(1).toArray();
+            holders_count = await holdersCollection().find({ token_id: `${address}`, existingAt: { $gte: oneMonthAgo.unix() } }).toArray();
         } else {
 
         }
@@ -50,7 +50,7 @@ token.get('/info', async (req, res) => {
             message: 'Success',
             data: {
                 prices,
-                holders_count: holders[0]['num_holders']
+                holders_count
             }
         });
     } catch (e) {
