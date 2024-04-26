@@ -2,12 +2,45 @@ const { connectToDatabase, getDb } = require('./db/conn.js');
 connectToDatabase();
 
 module.exports = {
-    tokensInDb: async(date) => {
-        console.log(date)
+    formatPools: (pools) => {
+        const tokens = [];
+        pools.map((pool) => {
+            const token0 = {
+                ...pool['token0'],
+                pool_id: pool['id'],
+                existingAt: pool['createdAtTimestamp']
+            };
+            const token1 = {
+                ...pool['token1'],
+                pool_id: pool['id'],
+                existingAt: pool['createdAtTimestamp']
+            };
+            tokens.push(token0);
+            tokens.push(token1);
+        });
+
+        return tokens;
+    },
+    formatPrices: (dayDatas) => {
+        const prices = [];
+        dayDatas.map((dayData)=> {
+            prices.push({
+                "priceUSD": dayData['priceUSD'],
+                "date": dayData['date'],
+                "token_id": dayData['token']['id'],
+                "high": dayData['high'],
+                "id": dayData["id"],
+                "low": dayData["low"],
+                "open": dayData["open"]
+            })
+        });
+
+        return prices;
+    },
+    tokensInDb: async() => {
         try {
             const tokensCollection = getDb().collection("tokens");
             const uniqueTokens = await tokensCollection.aggregate([
-                { $match: { existingAt: { $gte: `"${date}"` } } },
                 { $group: { _id: "$id", token: { $first: "$$ROOT" } } },
                 { $replaceRoot: { newRoot: "$token" } },
                 { $sort: { existingAt: -1 } }
@@ -29,5 +62,9 @@ module.exports = {
     },
     holdersCollection: ()=> {
         return getDb().collection("holders")
+    },
+    socialsCollection: ()=> {
+        return getDb().collection("socials")
     }
+
 }

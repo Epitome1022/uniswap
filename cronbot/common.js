@@ -62,5 +62,9 @@ module.exports = {
     },
     holdersCollection: ()=> {
         return getDb().collection("holders")
+    },
+    socialsCollection: ()=> {
+        return getDb().collection("socials")
     }
+
 }

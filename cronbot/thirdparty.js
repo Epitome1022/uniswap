@@ -1,5 +1,7 @@
 const axios = require('axios');
 const UNISWAP_V3_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+const GECKOTERMINAL_API = 'https://api.geckoterminal.com/api/v2/networks';
+
 const dotenv = require('dotenv')
 dotenv.config();
 const fetchPools = async (page, lastTimestamp) => {
@@ -118,5 +120,36 @@ const fetchHolders = async (formattedDate, token_address, access_token) => {
     }
 }
 
+const fetchSocialForToken = async (network, token_address) => {
+    let socials = {
+        websites: null,
+        discordURL: null,
+        telegramURL: null,
+        twitterURL: null
+    };
+    try {
+        const response = await axios.get(`${GECKOTERMINAL_API}/${network}/tokens/${token_address}/info`);
+        const tokenDetails = response.data.data;
 
-module.exports = { fetchPools, fetchTokenDayDatas, fetchHolders }
+        if (tokenDetails) {
+            if (tokenDetails.attributes.websites != [] && tokenDetails.attributes.websites) {
+                socials.websites = tokenDetails.attributes.websites;
+            }
+            if (tokenDetails.attributes.twitter_handle) {
+                socials.twitterURL = `https://twitter.com/${tokenDetails.attributes.twitter_handle}`
+            }
+            if (tokenDetails.attributes.telegram_handle) {
+                socials.telegramURL = `https://t.me/${tokenDetails.attributes.telegram_handle}`
+            }
+            if (tokenDetails.attributes.discord_url) {
+                socials.discordURL = `https://discord.com/invite/${tokenDetails.attributes.discordURL}`
+            }
+        }
+    }
+    catch (err) {
+        console.error("Error fetching socials for token: ", err)
+    }
+    return socials;
+}
+
+module.exports = { fetchPools, fetchTokenDayDatas, fetchHolders, fetchSocialForToken }
